@@ -1,26 +1,27 @@
 import Text.Show.Functions
 import Data.Char
-data Auto = Auto {nombre :: String, nivelDeNafta :: Float, velocidad :: Float, nombreEnamorade :: String, truco :: Truco} deriving (Show)
-type Truco = Auto -> Auto
 
-rayoMcQueen = Auto " " 1.0 5 "unAuto" deReversa
+--3.1
 
-deReversa :: Truco
-deReversa unAuto = unAuto {nivelDeNafta = ((+200	).nivelDeNafta) unAuto} 
+data Auto = Auto {nombre :: String, nivelDeNafta :: Float, velocidad :: Float, nombreEnamorade :: String, truco :: String} deriving (Show)
+type FuncionAuto = Auto -> Auto
 
-impresionar :: Truco
+deReversa :: FuncionAuto
+deReversa unAuto = unAuto {nivelDeNafta = ((+200).nivelDeNafta) unAuto} 
+
+impresionar :: FuncionAuto
 impresionar unAuto = unAuto {velocidad = ((2*).velocidad) unAuto}
 
-nitro :: Truco
+nitro :: FuncionAuto
 nitro unAuto = unAuto {velocidad = ((15+).velocidad) unAuto}
 
-fingirAmor :: Auto -> Auto
-fingirAmor unAuto = unAuto
+fingirAmor :: Auto -> String -> Auto
+fingirAmor unAuto unNombre= unAuto {nombreEnamorade = unNombre}
 
-rochaMcQueen = Auto "RochaMcQueen" 300 0 "Ronco" deReversa
-biankerr = Auto "Biankerr" 500 20 "Tinch" impresionar
-gushtav = Auto "Gushtav" 200 130 "PetiLaLinda" nitro
-rodra = Auto "Rodra" 0 50 "Taisa" fingirAmor
+rochaMcQueen = Auto "RochaMcQueen" 300 0 "Ronco" "deReversa"
+biankerr = Auto "Biankerr" 500 20 "Tinch" "impresionar"
+gushtav = Auto "Gushtav" 200 130 "PetiLaLinda" "nitro"
+rodra = Auto "Rodra" 0 50 "Taisa" "fingirAmor"
 
 -- 3.2
 incrementarVelocidad :: Auto-> Auto
@@ -49,21 +50,43 @@ pasarAMinuscula  = map toLower
 -- 3.3
 
 puedeRealizarTruco :: Auto -> Bool
-puedeRealizarTruco unAuto = nivelDeNafta unAuto > 0 && velocidad unAuto > 100
+puedeRealizarTruco unAuto = nivelDeNafta unAuto > 0 && velocidad unAuto < 100
 
 -- 3.4
 
-comboLoco :: Truco
+comboLoco :: FuncionAuto
 comboLoco = deReversa.nitro
 
-queTrucazo :: Truco
-queTrucazo = incrementarVelocidad.fingirAmor
+queTrucazo :: Auto -> String -> Auto
+queTrucazo unAuto unNombre = incrementarVelocidad (fingirAmor unAuto unNombre)
 
-turbo :: Truco
+turbo :: FuncionAuto
 turbo = vaciarNafta.aumentarVelocidadPorNivelDeNafta
 
-vaciarNafta :: Truco
+vaciarNafta :: FuncionAuto
 vaciarNafta unAuto = unAuto{nivelDeNafta = 0}
 
-aumentarVelocidadPorNivelDeNafta :: Truco
+aumentarVelocidadPorNivelDeNafta :: FuncionAuto
 aumentarVelocidadPorNivelDeNafta unAuto = unAuto{velocidad= velocidad unAuto + ((nivelDeNafta unAuto)*10)}
+
+
+--Casos De Prueba
+--3.1
+--deReversa rochaMcQueen
+--impresionar biankerr
+--nitro gushtav
+--fingirAmor rodra "Petra"
+--3.2
+--incrementarVelocidad rochaMcQueen
+--incrementarVelocidad biankerr
+--incrementarVelocidad gushtav
+--incrementarVelocidad rodra 
+--3.3
+--puedeRealizarTruco rochaMcQueen
+--puedeRealizarTruco gushtav
+--puedeRealizarTruco rodra
+--3.4
+--comboLoco rochaMcQueen
+--queTrucazo rodra "Murcielago"
+--turbo gushtav
+--turbo rodra
